@@ -12,7 +12,7 @@ class DieSide extends Component {
     this.state = this.props;
   }
   handleChange(response) {
-    this.Manager.setDieSide(this.state.id(), response);
+    this.state.manager.setDieSide(this.state.display.id(), response);
   }
   render() {
     const {
@@ -21,13 +21,13 @@ class DieSide extends Component {
     return (
       <Autotab
         type="text"
-        name={display.id()}
-        maxLength={1}
-        hint={display.default()} //convert to str
-        // style={{ height: 24, paddingLeft: 10 }}
-        value={display.value}
-        onChange={this.handleChange}
         autoFocus
+        hint={display.default().toString()} //convert to str
+        maxLength={1}
+        name={display.id()}
+        onChange={this.handleChange}
+        style={{ height: 24, width: 16, marginLeft: 10, marginRight: 10 }}
+        value={(display.getValue() || '').toString()}
       />
     )
   }
@@ -36,11 +36,12 @@ class DieSide extends Component {
 const Die = function(props){
   const {
     display,
+    manager,
   } = props
   return (
     <div className="row Card">
-      {display.sides.map(function(dieSide, index) {
-        return <DieSide key={index} display={dieSide} />
+      {display.getSides().map(function(dieSide) {
+        return <DieSide key={dieSide.id()} manager={manager} display={dieSide} />
       })}
     </div>
   )
@@ -50,13 +51,15 @@ class MainView extends Component {
   constructor(){
     super();
     this.calculate = this.calculate.bind(this);
-    const manager = Manager.new();
+    const manager = Manager();
+    window.Manager = manager;
     this.state = {
       manager: manager,
       display: manager.getDisplay(),
     };
   }
   calculate(){
+    this.state.manager.calculate();
     this.setState({
       display: this.state.manager.getDisplay(),
     });
@@ -64,14 +67,15 @@ class MainView extends Component {
   render() {
     const {
       display,
+      manager,
     } = this.state
     return (
       <div className="container Manager">
         <div className="Title">
           Dice Shit
         </div>
-        {display.dice.map(function(die, index) {
-          return <Die key={index} display={die} />
+        {display.dice.map(function(die) {
+          return <Die key={die.id()} manager={manager} display={die} />
         })}
         <div onClick={this.calculate} className="btn btn-default Calculate">
           Calculate
