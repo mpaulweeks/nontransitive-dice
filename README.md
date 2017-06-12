@@ -1,6 +1,8 @@
 # nontransitive-dice
 Static page powered by react to test/verify nontransitive-dice
 
+https://www.npmjs.com/package/react-input-auto-tab
+
 hypo
 
 d1 4 4 4 4 2 2
